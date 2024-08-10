@@ -1,13 +1,32 @@
 #include "log.h"
 
-int print_arr(char *name, int *nums, int len)
-{
-    if (name && strlen(name)) {
-        printf("%s = ", name);
+int sum(uint8_t* data, int length) {
+    int sum = 0;
+    for (int i = 0; i < length; ++i) {
+        sum += data[i];
     }
+    return sum;
+}
 
-    printf("[", name);
-    for (int i = 0; i < len; i++) {
+uint16_t crc(uint8_t* data, int length)
+{
+    uint16_t crc = 0;
+    while (length--) {
+        crc ^= *(data++) << 8;
+        for (int i = 0; i < 8; i++) {
+            if (crc & 0x8000)
+                crc = (crc << 1) ^ 0x1021;
+            else
+                crc = crc << 1;
+        }
+    }
+    return crc;
+}
+
+int print_arr(int* nums, int length)
+{
+    printf("[");
+    for (int i = 0; i < length; i++) {
         printf(", %d" + !i * 2, nums[i]);
     }
     printf("]\n");
@@ -15,17 +34,13 @@ int print_arr(char *name, int *nums, int len)
     return 0;
 }
 
-int print_mat(char *name, int *nums, int h, int w)
+int print_mat(int* nums, int height, int width)
 {
-    if (name && strlen(name)) {
-        printf("%s = ", name);
-    }
-
-    printf("[\n", name);
-    for (int r = 0; r < h; r++) {
+    printf("[\n");
+    for (int row = 0; row < height; row++) {
         printf("  [");
-        for (int c = 0; c < w; c++) {
-            printf(", %d" + !c * 2, nums[r * w + c]);
+        for (int col = 0; col < width; col++) {
+            printf(", %d" + !col * 2, nums[row * width + col]);
         }
         printf("],\n");
     }
@@ -34,19 +49,26 @@ int print_mat(char *name, int *nums, int h, int w)
     return 0;
 }
 
-int print_bytes(char *name, u8 *data, int len)
+int print_bytes(uint8_t* data, int length)
 {
-    if (name && strlen(name)) {
-        printf("%s = ", name);
-    }
-
-    printf("\"", name);
-    for (int i = 0; i < len; i++) {
+    printf("\"");
+    for (int i = 0; i < length; i++) {
         printf("\\x%02x", data[i]);
     }
     printf("\"\n");
 
     return 0;
+}
+
+void print_memory(uint8_t* data, int length, int width, int offset)
+{
+    for (int i = 0; i < length; i += width) {
+        printf("%08X", i + offset);
+        for (int j = 0; j < width && (i + j) < length; ++j) {
+            printf(" %02X", data[i + j]);
+        }
+        printf("\n");
+    }
 }
 
 char  log_buff[0x100000];  // 1MB
@@ -77,3 +99,23 @@ int log_print(char* format, ...)
     va_end(p);
     return 0;
 }
+
+void log_test()
+{
+    char text[] = "ABCDEFGH\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8";
+
+    log_num(1.1 - 1); // 0.1
+    log_num(sum(text, strlen(text))); // 1992
+    log_hex(crc(text, strlen(text))); // 0x9854
+    log_bytes(text);  // "\x41\x42...\xb7\xb8"
+
+    print_memory(text, strlen(text), 8, 0x1000); // 00001000 41 42 43 ...
+
+    int array[] = {3, 1, 4, 1, 5, 9};
+    int matrix[2][3] = {3, 1, 4, 1, 5, 9};
+
+    log_arr(array);
+    log_mat(matrix);
+}
+
+// int main() { log_test(); }

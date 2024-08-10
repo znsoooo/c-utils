@@ -4,14 +4,19 @@
 
 /* including headers */
 
+#include <math.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdint.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 /* alias of types */
+
+#define abs fabs
+#define max fmax
+#define min fmin
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -26,10 +31,10 @@ typedef int64_t s64;
 
 /* user define options */
 
-#define LINE_NUMBER 1
+#define LINE_NUMBER 0
 #define PRINT_TO_SCREEN 1
-#define PRINT_TO_STRING 1
-#define PRINT_TO_FILE   1
+#define PRINT_TO_STRING 0
+#define PRINT_TO_FILE   0
 
 
 /* print line number */
@@ -45,17 +50,17 @@ typedef int64_t s64;
 
 #define puts(s) LN + printf("%s\n", s)
 #define log_str(x) LN + printf(#x" = \"%s\"\n", x)
-#define log_num(x) LN + printf(#x" = %.10g\n", (double)x)
-#define log_arr(x) LN + print_arr(#x, x, sizeof(x) / sizeof(x[0]))
-#define log_mat(x) LN + print_mat(#x, (int*)x, sizeof(x) / sizeof(x[0]), sizeof(x[0]) / sizeof(x[0][0]))
-#define log_bytes(x) LN + print_bytes(#x, x, sizeof(x))
+#define log_num(x) LN + printf(#x" = %.15g\n", (double)x)
+#define log_hex(x) LN + printf(#x" = %#x\n", (int)x)
+#define log_arr(x) LN + printf(#x" = ") + print_arr(x, sizeof(x) / sizeof(x[0]))
+#define log_mat(x) LN + printf(#x" = ") + print_mat((int*)x, sizeof(x) / sizeof(x[0]), sizeof(x[0]) / sizeof(x[0][0]))
+#define log_bytes(x) LN + printf(#x" = ") + print_bytes(x, sizeof(x))
 
-int print_arr(char *name, int *nums, int len);
-int print_mat(char *name, int *nums, int h, int w);
-int print_bytes(char *name, u8 *data, int len);
+int print_arr(int* nums, int length);
+int print_mat(int* nums, int height, int width);
 
 
-/* redirect `printf` */
+/* redirect 'printf' */
 
 #define printf log_print
 
