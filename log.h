@@ -168,25 +168,59 @@ static void memoryview(void* data, int length, int width, int offset)
     }
 }
 
+static char* read(char* path, int* length)
+{
+    FILE *fp = fopen(path, "rb");
+    if (fp) {
+        fseek(fp, 0, SEEK_END);
+        int _length = ftell(fp);
+        fseek(fp, 0, SEEK_SET);
+        if (length) {
+            *length = _length;
+        }
+        char* data = calloc(1, _length + 1);
+        fread(data, _length, 1, fp);
+        fclose(fp);
+        return data;
+    }
+    return 0;
+}
+
+static int write(char* path, void* data, int length)
+{
+    FILE *fp = fopen(path, "wb");
+    if (fp) {
+        fwrite(data, length, 1, fp);
+        fclose(fp);
+        return 1;
+    }
+    return 0;
+}
+
 
 /* unit test */
 
 static void log_test()
 {
+    // string and number print test
     char text[20] = "ABCDEFGH\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8";
-
     log_num(1.1 - 1); // 0.1
     log_num(checksum(text, strlen(text))); // 1992
     log_hex(crc(text, strlen(text))); // 0x9854
-    log_bytes(text);  // "\x41\x42...\xb7\xb8"
-
+    log_bytes(text);  // "\x41\x42...\xb7\xb8...\x00\x00"
     memoryview(text, strlen(text), 8, 0x1000); // 00001000 41 42 43 ...
 
+    // array print test
     double array[] = {3, 1, 4, 1.59};
     int matrix[2][3] = {3, 1, 4, 1, 5, 9};
-
     log_arr(array);
     log_mat(matrix);
+
+    // file function test
+    int length = 0;
+    write("save.txt", text, 8);
+    puts(read("save.txt", &length));
+    expr(length);
 }
 
 
