@@ -88,6 +88,10 @@ static int log_print(char* format, ...)
 
 /* log functions */
 
+#define    wait_if(expr, ...) do { if (expr) { printf(__VA_ARGS__); getchar(); } } while(0)
+#define warning_if(expr, ...) do { if (expr) { printf(__VA_ARGS__); printf("\n"); } } while(0)
+#define   error_if(expr, ...) do { if (expr) { printf(__VA_ARGS__); printf("\n"); exit(1); } } while(0)
+
 #define puts(s) LN + printf("%s\n", s)
 
 #define log_str(x) LN + printf(#x" = \"%s\"\n", x)
