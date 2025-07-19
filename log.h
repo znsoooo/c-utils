@@ -88,9 +88,9 @@ static int log_print(char* format, ...)
 
 /* log functions */
 
-#define    wait_if(expr, ...) do { if (expr) { printf(__VA_ARGS__); getchar(); } } while(0)
-#define warning_if(expr, ...) do { if (expr) { printf(__VA_ARGS__); printf("\n"); } } while(0)
-#define   error_if(expr, ...) do { if (expr) { printf(__VA_ARGS__); printf("\n"); exit(1); } } while(0)
+#define wait_if(expr, ...) do { if (expr) { printf(__VA_ARGS__); getchar(); } } while(0)
+#define info_if(expr, ...) do { if (expr) { printf(__VA_ARGS__); printf("\n"); } } while(0)
+#define error_if(expr, ...) do { if (expr) { printf(__VA_ARGS__); printf("\n"); exit(1); } } while(0)
 
 #define puts(s) LN + printf("%s\n", s)
 
@@ -100,8 +100,8 @@ static int log_print(char* format, ...)
 
 #define log_arr(x) do { \
     LN + printf(#x" = ["); \
-    for (int _i = 0; _i < sizeof(x) / sizeof(x[0]); _i++) { \
-        printf(", %.15g" + !_i * 2, (double)x[_i]); \
+    for (int i = 0; i < sizeof(x) / sizeof(x[0]); i++) { \
+        printf(", %.15g" + !i * 2, (double)x[i]); \
     } \
     printf("]\n"); \
 } while (0)
@@ -109,10 +109,10 @@ static int log_print(char* format, ...)
 #define log_mat(x) do { \
     LN + printf(#x" = "); \
     printf("[\n"); \
-    for (int _r = 0; _r < sizeof(x) / sizeof(x[0]); _r++) { \
+    for (int r = 0; r < sizeof(x) / sizeof(x[0]); r++) { \
         printf("  ["); \
-        for (int _c = 0; _c < sizeof(x[0]) / sizeof(x[0][0]); _c++) { \
-            printf(", %.15g" + !_c * 2, (double)x[_r][_c]); \
+        for (int c = 0; c < sizeof(x[0]) / sizeof(x[0][0]); c++) { \
+            printf(", %.15g" + !c * 2, (double)x[r][c]); \
         } \
         printf("],\n"); \
     } \
@@ -121,8 +121,8 @@ static int log_print(char* format, ...)
 
 #define log_bytes(x) do { \
     LN + printf(#x" = \""); \
-    for (int _i = 0; _i < sizeof(x); _i++) \
-        printf("\\x%02x", ((uint8_t*)x)[_i]); \
+    for (int i = 0; i < sizeof(x); i++) \
+        printf("\\x%02x", ((uint8_t*)x)[i]); \
     printf("\"\n"); \
 } while (0)
 
